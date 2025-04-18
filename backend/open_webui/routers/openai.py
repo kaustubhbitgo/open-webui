@@ -10,6 +10,7 @@ from aiocache import cached
 import requests
 
 
+from starlette.responses import JSONResponse
 from fastapi import Depends, FastAPI, HTTPException, Request, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
@@ -567,7 +568,8 @@ async def verify_connection(
                     error_detail = f"HTTP Error: {r.status}"
                     res = await r.json()
                     if "error" in res:
-                        error_detail = f"External Error: {res['error']}"
+                        return JSONResponse(status_code=r.status, content=res)
+                    error_detail = f"External Error: {res}"
                     raise Exception(error_detail)
 
                 response_data = await r.json()
